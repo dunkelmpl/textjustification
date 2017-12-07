@@ -7,7 +7,7 @@ class TextJustifier {
      */
     public function __construct($words)
     {
-        $this->words = $words;
+        $this->words = array_map('trim', $words);
     }
 
     /**
@@ -330,6 +330,36 @@ function main()
                         "should", "not", "throw", "an", "exception",
                         "since", "maxLen", "here", "is", "17",
                     ]))->justifyText(17);
+                },
+            ],
+        ],
+        [
+            'assert' => 'testEquals',
+            'params' => [
+                [],
+                function() {
+                    return (new TextJustifier([]))->justifyText(16);
+                },
+            ],
+        ],
+        [
+            'assert' => 'testEquals',
+            'params' => [
+                ["Onewordtest     "],
+                function() {
+                    return (new TextJustifier(["Onewordtest"]))->justifyText(16);
+                },
+            ],
+        ],
+        [
+            'assert' => 'testEquals',
+            'params' => [
+                [
+                    "Non-trimmed         ",
+                    "words           test"
+                ],
+                function() {
+                    return (new TextJustifier(["Non-trimmed    ", "   words", "         test          "]))->justifyText(20);
                 },
             ],
         ],

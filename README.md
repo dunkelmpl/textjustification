@@ -29,7 +29,7 @@ Note: solution is covered into tests, including coverage of invalid case (too lo
 
 Following is final program output:
 ```
-.....
+........
 
-OK (5 tests passed)
+OK (8 tests passed)
 ```
