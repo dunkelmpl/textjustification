@@ -285,6 +285,19 @@ function main()
             'assert' => 'testEquals',
             'params' => [
                 [
+                    "This  test  fits into one line",
+                ],
+                function() {
+                    return (new TextJustifier(
+                        ["This", "test", "fits", "into", "one", "line"]
+                    ))->justifyText(30);
+                }
+            ],
+        ],
+        [
+            'assert' => 'testEquals',
+            'params' => [
+                [
                     "This  is  one of",
                     "the corner cases",
                     "somejustsolong  ",
