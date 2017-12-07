@@ -42,9 +42,9 @@ class TextJustifier {
      */
     protected function getWordsToLinesCost($lineWidth)
     {
-		$numWords = count($this->words);
-		
-		/* @var int[][] $costs */
+        $numWords = count($this->words);
+        
+        /* @var int[][] $costs */
         $costs = [];
 
         for ($wordIndex = 0; $wordIndex < $numWords; $wordIndex++) {
@@ -109,7 +109,7 @@ class TextJustifier {
     }
 
     /**
-	 * @param int   $lineWidth
+     * @param int   $lineWidth
      * @param int[] $wordWrapPositions
      *
      * @return string[][]
@@ -123,28 +123,28 @@ class TextJustifier {
         while ($wordIndex < count($this->words)) {
             $nextWordWrapPos = $wordWrapPositions[$wordIndex];
 
-			$row = [];
-			$rowLength = 0;
+            $row = [];
+            $rowLength = 0;
             while ($wordIndex < $nextWordWrapPos) {
-				$row[] = $this->words[$wordIndex];
-				$rowLength += ($rowLength > 0 ? 1 : 0) + strlen($this->words[$wordIndex]);
+                $row[] = $this->words[$wordIndex];
+                $rowLength += ($rowLength > 0 ? 1 : 0) + strlen($this->words[$wordIndex]);
                 $wordIndex++;
             }
 
-			if ($rowLength < $lineWidth) {
-				$cellIndex = 0;
-				$paddingCellsQuantity = count($row) - 1;
-				if ($paddingCellsQuantity == 0) { //1 word row
-					$paddingCellsQuantity = 1;
-				}
-				
-				do {
-					$row[$cellIndex] .= ' ';
-					$rowLength++;
-					$cellIndex = ($cellIndex+1)%$paddingCellsQuantity;
-				} while ($rowLength < $lineWidth);
-			}
-			$justifiedText[$rowIndex] = implode(' ', $row);
+            if ($rowLength < $lineWidth) {
+                $cellIndex = 0;
+                $paddingCellsQuantity = count($row) - 1;
+                if ($paddingCellsQuantity == 0) { //1 word row
+                    $paddingCellsQuantity = 1;
+                }
+                
+                do {
+                    $row[$cellIndex] .= ' ';
+                    $rowLength++;
+                    $cellIndex = ($cellIndex+1)%$paddingCellsQuantity;
+                } while ($rowLength < $lineWidth);
+            }
+            $justifiedText[$rowIndex] = implode(' ', $row);
             $rowIndex++;
         }
 
@@ -177,18 +177,18 @@ class TextJustifier {
  */
 function testEquals($expected, $actual, $strict = true)
 {
-	$actualValue = call_user_func($actual);
-	
-	$result = $strict
-		? $expected === $actualValue
-		: $expected == $actualValue
-	;
-	
-	if (!$result) {
-		echo 'Failed asserting that expected ' . var_export($expected, true) . ' equals to ' . var_export($actualValue, true);
-	}
-	
-	return $result;
+    $actualValue = call_user_func($actual);
+    
+    $result = $strict
+        ? $expected === $actualValue
+        : $expected == $actualValue
+    ;
+    
+    if (!$result) {
+        echo 'Failed asserting that expected ' . var_export($expected, true) . ' equals to ' . var_export($actualValue, true);
+    }
+    
+    return $result;
 }
 
 /**
@@ -198,156 +198,156 @@ function testEquals($expected, $actual, $strict = true)
  */
 function testExpectException($exceptionClassName, callable $actual)
 {
-	try {
-		call_user_func($actual);
-	} catch (Exception $ex) {
-		if ($ex instanceof $exceptionClassName) {
-			return true;
-		} else {
-			throw $ex;
-		}
-	}
-	
-	return false;
+    try {
+        call_user_func($actual);
+    } catch (Exception $ex) {
+        if ($ex instanceof $exceptionClassName) {
+            return true;
+        } else {
+            throw $ex;
+        }
+    }
+    
+    return false;
 }
 
 function runTest(array $testData, &$buf)
 {
-	$function = $testData['assert'];
-	$params   = $testData['params'];
+    $function = $testData['assert'];
+    $params   = $testData['params'];
 
-	$unexpectedException = null;
-	$outText = "";
-	try {
-		ob_start();
-		$result = call_user_func_array($function, $params);
-		$outText = ob_get_contents();
-		ob_end_clean();
-	} catch (Exception $ex) {
-		$unexpectedException = $ex;
-		$result = false;
-	}
-	
-	if ($result) {
-		echo '.';
-	} else {
-		echo 'F';
-		
-		if ($unexpectedException) {
-			$buf .= "Unexpected exception: " . $unexpectedException . "\n";
-		}
-		
-		if ($outText != "") {
-			$buf .= $outText . "\n";
-		}
-	}
+    $unexpectedException = null;
+    $outText = "";
+    try {
+        ob_start();
+        $result = call_user_func_array($function, $params);
+        $outText = ob_get_contents();
+        ob_end_clean();
+    } catch (Exception $ex) {
+        $unexpectedException = $ex;
+        $result = false;
+    }
+    
+    if ($result) {
+        echo '.';
+    } else {
+        echo 'F';
+        
+        if ($unexpectedException) {
+            $buf .= "Unexpected exception: " . $unexpectedException . "\n";
+        }
+        
+        if ($outText != "") {
+            $buf .= $outText . "\n";
+        }
+    }
 }
 
 function main()
 {
     $result = 0;
     
-	$errorBuf = "";
-	
-	$tests = [
-		[
-			'assert' => 'testEquals',
-			'params' => [
-				[
-					"This    is    an",
-					"example  of text",
-					"justification   ",
-				],
-				function() {
-					return (new TextJustifier(
-						["This", "is", "an", "example", "of", "text", "justification"]
-					))->justifyText(16);
-				}
-			],
-		],
-		[
-			'assert' => 'testEquals',
-			'params' => [
-				[
-					"This   is   also",
-					"good     example",
-					"of          text",
-					"justification   ",
-				],
-				function() {
-					return (new TextJustifier(
-						["This", "is", "also", "good", "example", "of", "text", "justification"]
-					))->justifyText(16);
-				}
-			],
-		],
-		[
-			'assert' => 'testEquals',
-			'params' => [
-				[
-					"This  is  one of",
-					"the corner cases",
-					"somejustsolong  ",
-					"word  could make",
-				],
-				function() {
-					return (new TextJustifier([
-						"This", "is", "one", "of", "the", "corner", "cases",
-						"somejustsolong", "word", "could", "make"
-					]))->justifyText(16);
-				}
-			],
-		],
-		[
-			'assert' => 'testExpectException',
-			'params' => [
-				InvalidArgumentException::class,
-				function() {
-					return (new TextJustifier([
-						"This", "test", "case", "has", "a",
-						"seventeen(17-chr)", "long", "word",
-						"and", "thus", "we", "expect", "exception"
-					]))->justifyText(16);
-				}
-			],
-		],
-		[
-			'assert' => 'testEquals',
-			'params' => [
-				[
-					"This   test  case",
-					"even    with    a",
-					"seventeen(17-chr)",
-					"long  word should",
-					"not    throw   an",
-					"exception   since",
-					"maxLen here is 17",
-				],
-				function() {
-					return (new TextJustifier([
-						"This", "test", "case", "even", "with", "a",
-						"seventeen(17-chr)", "long", "word",
-						"should", "not", "throw", "an", "exception",
-						"since", "maxLen", "here", "is", "17",
-					]))->justifyText(17);
-				},
-			],
-		],
-	];
-	
-	foreach ($tests as $testData) {
-		runTest($testData, $errorBuf);
-	}
-	
-	if ($errorBuf != "") {
-		echo "\n\n" . $errorBuf. "\n\nFAILED!\n";
-		
-		$result = 1;
-	} else {
-		echo "\n\nOK (". count($tests)." tests passed)\n";
-	}
-	
-	return $result;
+    $errorBuf = "";
+    
+    $tests = [
+        [
+            'assert' => 'testEquals',
+            'params' => [
+                [
+                    "This    is    an",
+                    "example  of text",
+                    "justification   ",
+                ],
+                function() {
+                    return (new TextJustifier(
+                        ["This", "is", "an", "example", "of", "text", "justification"]
+                    ))->justifyText(16);
+                }
+            ],
+        ],
+        [
+            'assert' => 'testEquals',
+            'params' => [
+                [
+                    "This   is   also",
+                    "good     example",
+                    "of          text",
+                    "justification   ",
+                ],
+                function() {
+                    return (new TextJustifier(
+                        ["This", "is", "also", "good", "example", "of", "text", "justification"]
+                    ))->justifyText(16);
+                }
+            ],
+        ],
+        [
+            'assert' => 'testEquals',
+            'params' => [
+                [
+                    "This  is  one of",
+                    "the corner cases",
+                    "somejustsolong  ",
+                    "word  could make",
+                ],
+                function() {
+                    return (new TextJustifier([
+                        "This", "is", "one", "of", "the", "corner", "cases",
+                        "somejustsolong", "word", "could", "make"
+                    ]))->justifyText(16);
+                }
+            ],
+        ],
+        [
+            'assert' => 'testExpectException',
+            'params' => [
+                InvalidArgumentException::class,
+                function() {
+                    return (new TextJustifier([
+                        "This", "test", "case", "has", "a",
+                        "seventeen(17-chr)", "long", "word",
+                        "and", "thus", "we", "expect", "exception"
+                    ]))->justifyText(16);
+                }
+            ],
+        ],
+        [
+            'assert' => 'testEquals',
+            'params' => [
+                [
+                    "This   test  case",
+                    "even    with    a",
+                    "seventeen(17-chr)",
+                    "long  word should",
+                    "not    throw   an",
+                    "exception   since",
+                    "maxLen here is 17",
+                ],
+                function() {
+                    return (new TextJustifier([
+                        "This", "test", "case", "even", "with", "a",
+                        "seventeen(17-chr)", "long", "word",
+                        "should", "not", "throw", "an", "exception",
+                        "since", "maxLen", "here", "is", "17",
+                    ]))->justifyText(17);
+                },
+            ],
+        ],
+    ];
+    
+    foreach ($tests as $testData) {
+        runTest($testData, $errorBuf);
+    }
+    
+    if ($errorBuf != "") {
+        echo "\n\n" . $errorBuf. "\n\nFAILED!\n";
+        
+        $result = 1;
+    } else {
+        echo "\n\nOK (". count($tests)." tests passed)\n";
+    }
+    
+    return $result;
 }
 
 exit(main());
